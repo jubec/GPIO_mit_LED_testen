@@ -65,7 +65,7 @@ void interaktiveBlinkTests()
     // Warte bis zu 10 Sekunden auf Eingabe
     while ((millis() - startWartezeit < 10000) && Serial.available() == 0)
     {
-      delay(50);
+      delay(10);
     }
 
     if (Serial.available() == 0)
@@ -74,17 +74,22 @@ void interaktiveBlinkTests()
       break;
     }
 
-    // Eingabe lesen
-    while (Serial.available())
+    // Eingabezeichen bis Enter lesen und anzeigen
+    while (true)
     {
-      char c = Serial.read();
-      if (c == '\n' || c == '\r')
-        break;
-      eingabe += c;
-      delay(10);
+      if (Serial.available())
+      {
+        char c = Serial.read();
+        if (c == '\n' || c == '\r')
+          break;
+        eingabe += c;
+        Serial.print(c); // Zeichen anzeigen
+      }
     }
 
+    Serial.println();
     eingabe.trim();
+
     if (eingabe == "")
     {
       Serial.println("Interaktiver Blink-Modus beendet.");
@@ -132,10 +137,8 @@ void interaktiveBlinkTests()
 
       if (Serial.available())
       {
-        String stopEingabe = Serial.readStringUntil('\n');
-        stopEingabe.trim();
-
-        if (stopEingabe == "" || stopEingabe == " ")
+        char stop = Serial.read();
+        if (stop == ' ')
         {
           Serial.print("🛑 Blink-Modus für GPIO ");
           Serial.print(blinkPin);
