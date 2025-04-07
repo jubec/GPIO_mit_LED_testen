@@ -122,14 +122,15 @@ void interaktiveBlinkTests()
 
       if (Serial.available())
       {
-        char stopp = Serial.read();
-        if (stopp == ' ')
+        String stopEingabe = Serial.readStringUntil('\n');
+        stopEingabe.trim();
+
+        if (stopEingabe == "" || stopEingabe == " ")
         {
           Serial.print("Blink-Modus für GPIO ");
           Serial.print(blinkPin);
           Serial.println(" beendet.");
-          // Beende den Blinkmodus, indem du den Pin auf einen definierten Zustand setzt
-          digitalWrite(blinkPin, HIGH); // Bei invertiert: HIGH = aus
+          digitalWrite(blinkPin, HIGH); // aus
           break;
         }
       }
@@ -141,6 +142,7 @@ void setup()
 {
   Serial.begin(115200);
   delay(1000);
+  Serial.println("  ");
   Serial.println("🚀 Starte erweiterten GPIO-Test mit Hinweisen");
 
   interaktiveBlinkTests(); // Aufruf des interaktiven Blink-Test-Modus
@@ -175,4 +177,5 @@ void loop()
 
   Serial.println("\n✅ GPIO-Test abgeschlossen. ");
   interaktiveBlinkTests(); // Aufruf des interaktiven Blink-Test-Modus
+  delay(100);
 }
