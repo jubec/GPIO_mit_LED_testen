@@ -163,6 +163,18 @@ void loop()
 {
   for (int i = 0; i < sizeof(gpioListe) / sizeof(GpioInfo); i++)
   {
+    // ⛔️ Check auf Tasteneingabe zum Abbrechen des GPIO-Tests
+    Serial.println("💡 Zum Abbrechen während des GPIO-Tests: 'x' senden");
+    if (Serial.available())
+    {
+      char abbrechTaste = Serial.read();
+      if (abbrechTaste == 'x' || abbrechTaste == 'X')
+      {
+        Serial.println("\n❌ GPIO-Durchlauf abgebrochen – zurück zum interaktiven Modus.");
+        break; // raus aus der Schleife → Springt zu interaktiveBlinkTests()
+      }
+    }
+
     int pin = gpioListe[i].pin;
     Serial.println();
     Serial.print("🔎 Teste GPIO ");
@@ -187,6 +199,6 @@ void loop()
   }
 
   Serial.println("\n📅 GPIO-Test abgeschlossen.");
-  interaktiveBlinkTests();
+  interaktiveBlinkTests(); // Zurück in den Blinkmodus
   delay(100);
 }
