@@ -6,13 +6,13 @@ Funktionsprüfung von GPIOs direkt über den seriellen Monitor.
 
 Ideal geeignet für
 Einsteiger, Maker und Entwickler
-zum Aufbau von Schaltungen,
-zum Erkennen von I2C- und SPI-Geräten und
-zum gezielten Test einzelner Pins sowie der Leitungen bis zum Endpunkt.
+- zum Aufbau von Schaltungen,
+- zum Erkennen von I2C- und SPI-Geräten und
+- zum gezielten Test einzelner Pins sowie der Leitungen bis zum Endpunkt.
 
 Anwendung:
-Mit einer LED am GPIO kann dessen Funktion geprüft oder
-ein bestimmter Pin verfolgt werden.
+Mit einer LED (mit Messspitze) wird am GPIO die Funktion geprüft oder
+eine GPIO-Verbindung kann in der Schaltung verfolgt werden.
 So lassen sich z. B. falsch gewählte GPIOs,
 fehlerhafte Anschlüsse oder Kontaktprobleme schneller erkennen.
 
@@ -26,20 +26,21 @@ Einfache SPI-Kommunikation wird getestet (z. B. SD-Karte, OLED)
 📐 Voraussetzungen:
 ESP32 (z. B. DevkitC, NodeMCU) – andere Geräte: siehe unten
 Serielle Verbindung (115200 Baud), Monitor-Eingabe mit CRLF
-Optional: LED mit >ca. 330 Ohm Vorwiderstand an einem GPIO
+Ein LED mit > ca. 330 Ohm Vorwiderstand und einer Prüfleitung zu abtasten
 
 🕹 Bedienung:
 Startet automatisch mit GPIO-Test und Scan
 Danach interaktiver Modus (GPIO-Nummer per Tastatur in Konsole eingeben)
 Beenden mit Leertaste (Blinktest) oder 'x' (automatischer Durchlauf)
+LED auf Messpunkt halten oder anschliessen
 
 🛠 Anpassung an andere Mikrocontroller:
 Dieses Tool ist speziell für den ESP32 entwickelt worden.
 Es kann aber leicht an andere Boards angepasst werden, zum Beispiel:
-ESP8266 (z. B. D1 Mini)
-Arduino Uno / Nano / Mega
-Raspberry Pi Pico (mit Arduino-Unterstützung)
-Weitere Plattformen wie Teensy, STM32, Seeeduino usw.
+- ESP8266 (z. B. D1 Mini)
+- Arduino Uno / Nano / Mega
+- Raspberry Pi Pico (mit Arduino-Unterstützung)
+- Weitere Plattformen wie Teensy, STM32, Seeeduino usw.
 
 💬 Hilfe gewünscht?
 Das Projekt wurde in Zusammenarbeit mit ChatGPT entwickelt.
@@ -52,14 +53,14 @@ ChatGPT analysiert die Pins und gibt den passenden Code zurück – auf Wunsch m
 Es richtet sich an alle, die GPIOs schnell testen oder erste Hardwarekontakte prüfen möchten.
 
 Auf dass euch eine LED richtig leuchte!
-*/
+*///////////////////////////////////////////////////////////////////////////////////////////////
 
 #include <Arduino.h>
 #include <Wire.h>
 #include <SPI.h>
 
 // 🕒 Zentrale Steuerung aller Delay-Wartezeiten im Programm (ms)
-const unsigned long BLINK_DELAY = 500; // Zeit für LED-Blink und Wartepausen
+const unsigned long BLINK_DELAY = 500; // Zeit für LED-Blink und Wartepausen in Millisekunden
 const int spiCSPin = 5;                // Beispiel: SPI CS-Pin
 
 // Liste der GPIOPins und deren Eigenschaften
@@ -206,7 +207,11 @@ void interaktiveBlinkTests()
       Serial.println("Interaktiver Blink-Modus beendet.");
       break;
     }
-
+    if (eingabe.equalsIgnoreCase("x"))
+    {
+      Serial.println("❌ Zurück zum Hauptmenü.");
+      break;
+    }
     int blinkPin = eingabe.toInt();
     if (blinkPin < 0 || blinkPin > 39)
     {
