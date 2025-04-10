@@ -1,31 +1,57 @@
 /*
-LED GPIO-Testtool für den ESP32 (mit I2C- und SPI-Scan)
+GPIO-Test- und Analyse-Tool für den ESP32
+
+🔧 Dieses Werkzeug dient der schnellen Analyse und
+Funktionsprüfung von GPIOs direkt über den seriellen Monitor.
+
+Ideal geeignet für
+Einsteiger, Maker und Entwickler
+zum Aufbau von Schaltungen,
+zum Erkennen von I2C- und SPI-Geräten und
+zum gezielten Test einzelner Pins sowie der Leitungen bis zum Endpunkt.
+
 Anwendung:
-1. Anzeige der angeschlossenen  I2C und SPI
-2. Fehleranalyse mit einem LED, den GPIO erkennen wenn das LED leuchtet
-3. Auf einen gewählten GPIO wird ein Blinksignal gelegt, so kann die Leitung bis zum Endpunkt zu verfolgen werden
+Mit einer LED am GPIO kann dessen Funktion geprüft oder
+ein bestimmter Pin verfolgt werden.
+So lassen sich z. B. falsch gewählte GPIOs,
+fehlerhafte Anschlüsse oder Kontaktprobleme schneller erkennen.
 
---------------------------------------------------------
+✅ Funktionen im Überblick:
+Übersichtliche Liste wichtiger ESP32-GPIOs mit Nutzungshinweisen
+Automatischer Blinktest aller unkritischen GPIO-Ausgänge
+Interaktiver Modus: Nutzer kann GPIO-Nummer eingeben → LED blinkt
+I2C-Geräte werden beim Start automatisch erkannt und angezeigt
+Einfache SPI-Kommunikation wird getestet (z. B. SD-Karte, OLED)
 
-🔧 Funktionen:
-- Scan nach I2C-Geräten (z. B. Sensoren, OLEDs)
-- Test auf SPI-Antwort eines angeschlossenen Geräts
-- Gibt alle wichtigen GPIOs mit Info und Sicherheitshinweis aus
-- Automatischer Durchlauf aller GPIOs (nur sichere als Output)
-- Blinktest für einzeln eingegebene GPIOs, zur Leitungsverfolgung
+📐 Voraussetzungen:
+ESP32 (z. B. DevkitC, NodeMCU) – andere Geräte: siehe unten
+Serielle Verbindung (115200 Baud), Monitor-Eingabe mit CRLF
+Optional: LED mit >ca. 330 Ohm Vorwiderstand an einem GPIO
 
+🕹 Bedienung:
+Startet automatisch mit GPIO-Test und Scan
+Danach interaktiver Modus (GPIO-Nummer per Tastatur in Konsole eingeben)
+Beenden mit Leertaste (Blinktest) oder 'x' (automatischer Durchlauf)
 
+🛠 Anpassung an andere Mikrocontroller:
+Dieses Tool ist speziell für den ESP32 entwickelt worden.
+Es kann aber leicht an andere Boards angepasst werden, zum Beispiel:
+ESP8266 (z. B. D1 Mini)
+Arduino Uno / Nano / Mega
+Raspberry Pi Pico (mit Arduino-Unterstützung)
+Weitere Plattformen wie Teensy, STM32, Seeeduino usw.
 
-💡 Hinweis zur Anpassung:
-Dieser Sketch ist hier für den ESP32 "az-delivery-devkit-v4" optimiert.
-Wenn du ihn z.B. für einen ESP8266 (wie den D1 Mini) verwenden möchtest:
-➡️ Kopiere diesen vollständigen Code und sende ihn an ChatGPT.
-Schreibe dazu: „Bitte passe das GPIO-Testtool für den ESP8266 D1 Mini an.“
-Ich lese deinen Code, passe `gpioListe`, `pinMode`, `Wire.begin()` usw. an
-und sende dir die passende Version zurück – gern auch mit Erklärungen.
+💬 Hilfe gewünscht?
+Das Projekt wurde in Zusammenarbeit mit ChatGPT entwickelt.
+Die Anpassung an ein anderes Board kann direkt dort erfolgen:
+Einfach den kompletten Code bei ChatGPT einfügen
+Dazu schreiben: „Bitte passe das GPIO-Testtool für [Boardname] an.“
+ChatGPT analysiert die Pins und gibt den passenden Code zurück – auf Wunsch mit Erklärungen.
 
-📐 Benötigt:
-- LED mit >ca. 330 Ohm Vorwiderstand und geeigneten Messstrippen z.B. Dupont-Kabel
+🌐 Dieses Tool ist bewusst schlank gehalten – keine Bibliotheken, keine Weboberfläche.
+Es richtet sich an alle, die GPIOs schnell testen oder erste Hardwarekontakte prüfen möchten.
+
+Auf dass euch eine LED richtig leuchte!
 */
 
 #include <Arduino.h>
