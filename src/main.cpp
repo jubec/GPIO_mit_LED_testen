@@ -156,6 +156,9 @@ void setup()
   Serial.begin(115200);
   delay(1000);
   Serial.println("\n🚀 Starte erweiterten GPIO-Test mit Hinweisen...");
+
+  // I2C einmalig anzeigen
+  // SPi einmalig anzeigen
   interaktiveBlinkTests();
 }
 
@@ -199,6 +202,7 @@ void loop()
   }
 
   Serial.println("\n📅 GPIO-Test abgeschlossen.");
+  
   interaktiveBlinkTests(); // Zurück in den Blinkmodus
   delay(100);
 }
