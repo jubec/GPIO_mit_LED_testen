@@ -107,7 +107,7 @@ void scanI2C()
     Serial.println("❌ Keine I2C-Geräte gefunden.");
   }
   Serial.println("✅ I2C-Scan abgeschlossen.\n");
-}// Ende scanI2C()
+} // Ende scanI2C()
 
 // 🔍 Einfacher SPI-Test
 void testSPI(int csPin)
@@ -134,7 +134,7 @@ void testSPI(int csPin)
   {
     Serial.println("❌ Keine sinnvolle Antwort.");
   }
-}// Ende testSPI()
+} // Ende testSPI()
 
 // 🔧 Interaktiver Blink-Test für GPIOs
 void interaktiveBlinkTests()
@@ -231,7 +231,7 @@ void interaktiveBlinkTests()
       }
     }
   }
-}// Ende interaktiveBlinkTests()
+} // Ende interaktiveBlinkTests()
 
 // 🔧 Hauptsetup-Funktion
 void setup()
@@ -245,10 +245,9 @@ void setup()
 
   scanI2C();         // Alle I2C-Geräte anzeigen
   testSPI(spiCSPin); // Einfachen SPI-Test
-  delay(3000); // Wartezeit für I2C/SPI-Scan
+  delay(3000);       // Wartezeit für I2C/SPI-Scan
   interaktiveBlinkTests();
 } //  Ende Setup-Funktion
-
 
 // 🔧 Hauptloop-Funktion
 void loop()
