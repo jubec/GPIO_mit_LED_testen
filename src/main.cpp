@@ -53,7 +53,7 @@ ChatGPT analysiert die Pins und gibt den passenden Code zurück – auf Wunsch m
 Es richtet sich an alle, die GPIOs schnell testen oder erste Hardwarekontakte prüfen möchten.
 
 Auf dass euch eine LED richtig leuchte!
-*///////////////////////////////////////////////////////////////////////////////////////////////
+*/////////////////////////////////////////////////////////////////////////////////////////////
 
 #include <Arduino.h>
 #include <Wire.h>
