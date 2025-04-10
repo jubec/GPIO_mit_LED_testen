@@ -36,7 +36,7 @@ und sende dir die passende Version zurück – gern auch mit Erklärungen.
 const unsigned long BLINK_DELAY = 500; // Zeit für LED-Blink und Wartepausen
 const int spiCSPin = 5;                // Beispiel: SPI CS-Pin
 
-
+// Liste der GPIOPins und deren Eigenschaften
 struct GpioInfo
 {
   int pin;
@@ -107,7 +107,7 @@ void scanI2C()
     Serial.println("❌ Keine I2C-Geräte gefunden.");
   }
   Serial.println("✅ I2C-Scan abgeschlossen.\n");
-}
+}// Ende scanI2C()
 
 // 🔍 Einfacher SPI-Test
 void testSPI(int csPin)
@@ -134,8 +134,9 @@ void testSPI(int csPin)
   {
     Serial.println("❌ Keine sinnvolle Antwort.");
   }
-}
+}// Ende testSPI()
 
+// 🔧 Interaktiver Blink-Test für GPIOs
 void interaktiveBlinkTests()
 {
   Serial.println("\n🔧 Interaktiver Blink-Test:");
@@ -230,8 +231,9 @@ void interaktiveBlinkTests()
       }
     }
   }
-}
+}// Ende interaktiveBlinkTests()
 
+// 🔧 Hauptsetup-Funktion
 void setup()
 {
   Serial.begin(115200);
@@ -245,8 +247,10 @@ void setup()
   testSPI(spiCSPin); // Einfachen SPI-Test
   delay(3000); // Wartezeit für I2C/SPI-Scan
   interaktiveBlinkTests();
-}
+} //  Ende Setup-Funktion
 
+
+// 🔧 Hauptloop-Funktion
 void loop()
 {
   for (int i = 0; i < sizeof(gpioListe) / sizeof(GpioInfo); i++)
@@ -287,4 +291,4 @@ void loop()
   Serial.println("\n📅 GPIO-Test abgeschlossen.");
   interaktiveBlinkTests();
   delay(100);
-}
+} // Ende Loop-Funktion
