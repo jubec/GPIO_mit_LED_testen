@@ -1,17 +1,41 @@
 /*
-LED GPIO-Testtool für den ESP32
-----------------------------------
-Dieser LED-Test kann:
-- einzelne GPIOs des ESP32 zum Blinken bringen
-- alle GPIOs des ESP32 ansteuern
-- eine Liste der GPIOs mit Hinweisen ausgeben
+LED GPIO-Testtool für den ESP32 (mit I2C- und SPI-Scan)
+Anwendung:
+1. Anzeige der angeschlossenen  I2C und SPI
+2. Fehleranalyse mit einem LED, den GPIO erkennen wenn das LED leuchtet
+3. Auf einen gewählten GPIO wird ein Blinksignal gelegt, so kann die Leitung bis zum Endpunkt zu verfolgen werden
 
-Hinweis:
-- Verwende einen Vorwiderstand (ca. 330 Ohm) mit der LED
-- Test auch an offenen Kontakten (Spannungserkennung)
+--------------------------------------------------------
+
+🔧 Funktionen:
+- Scan nach I2C-Geräten (z. B. Sensoren, OLEDs)
+- Test auf SPI-Antwort eines angeschlossenen Geräts
+- Gibt alle wichtigen GPIOs mit Info und Sicherheitshinweis aus
+- Automatischer Durchlauf aller GPIOs (nur sichere als Output)
+- Blinktest für einzeln eingegebene GPIOs, zur Leitungsverfolgung
+
+
+
+💡 Hinweis zur Anpassung:
+Dieser Sketch ist hier für den ESP32 "az-delivery-devkit-v4" optimiert.
+Wenn du ihn z.B. für einen ESP8266 (wie den D1 Mini) verwenden möchtest:
+➡️ Kopiere diesen vollständigen Code und sende ihn an ChatGPT.
+Schreibe dazu: „Bitte passe das GPIO-Testtool für den ESP8266 D1 Mini an.“
+Ich lese deinen Code, passe `gpioListe`, `pinMode`, `Wire.begin()` usw. an
+und sende dir die passende Version zurück – gern auch mit Erklärungen.
+
+📐 Benötigt:
+- LED mit >ca. 330 Ohm Vorwiderstand und geeigneten Messstrippen z.B. Dupont-Kabel
 */
 
 #include <Arduino.h>
+#include <Wire.h>
+#include <SPI.h>
+
+// 🕒 Zentrale Steuerung aller Delay-Wartezeiten im Programm (ms)
+const unsigned long BLINK_DELAY = 500; // Zeit für LED-Blink und Wartepausen
+const int spiCSPin = 5;                // Beispiel: SPI CS-Pin
+
 
 struct GpioInfo
 {
@@ -50,6 +74,68 @@ GpioInfo gpioListe[] = {
     {38, "ℹ️ GPIO 38 – Nur Eingang", false},
     {39, "ℹ️ GPIO 39 – ADC, Eingang", false}};
 
+// 🔍 Einmaliger I2C-Scan beim Setup
+void scanI2C()
+{
+  byte error, address;
+  int nDevices = 0;
+
+  Serial.println("\n🔍 Starte I2C-Scan...");
+  for (address = 1; address < 127; address++)
+  {
+    Wire.beginTransmission(address);
+    error = Wire.endTransmission();
+
+    if (error == 0)
+    {
+      Serial.print("✅ I2C-Gerät gefunden bei Adresse 0x");
+      if (address < 16)
+        Serial.print("0");
+      Serial.println(address, HEX);
+      nDevices++;
+    }
+    else if (error == 4)
+    {
+      Serial.print("⚠️ Fehler bei Adresse 0x");
+      if (address < 16)
+        Serial.print("0");
+      Serial.println(address, HEX);
+    }
+  }
+  if (nDevices == 0)
+  {
+    Serial.println("❌ Keine I2C-Geräte gefunden.");
+  }
+  Serial.println("✅ I2C-Scan abgeschlossen.\n");
+}
+
+// 🔍 Einfacher SPI-Test
+void testSPI(int csPin)
+{
+  pinMode(csPin, OUTPUT);
+  digitalWrite(csPin, HIGH);
+  delay(BLINK_DELAY);
+
+  Serial.println("🔍 Teste SPI-Verbindung...");
+
+  digitalWrite(csPin, LOW);
+  SPI.beginTransaction(SPISettings(1000000, MSBFIRST, SPI_MODE0));
+  byte response = SPI.transfer(0xFF); // Dummy
+  SPI.endTransaction();
+  digitalWrite(csPin, HIGH);
+
+  Serial.print("📨 SPI-Antwort: ");
+  Serial.println(response, HEX);
+  if (response != 0xFF)
+  {
+    Serial.println("✅ Möglicherweise Gerät erkannt.");
+  }
+  else
+  {
+    Serial.println("❌ Keine sinnvolle Antwort.");
+  }
+}
+
 void interaktiveBlinkTests()
 {
   Serial.println("\n🔧 Interaktiver Blink-Test:");
@@ -62,7 +148,6 @@ void interaktiveBlinkTests()
     String eingabe = "";
     unsigned long startWartezeit = millis();
 
-    // Warte bis zu 10 Sekunden auf Eingabe
     while ((millis() - startWartezeit < 10000) && Serial.available() == 0)
     {
       delay(10);
@@ -74,7 +159,6 @@ void interaktiveBlinkTests()
       break;
     }
 
-    // Eingabezeichen bis Enter lesen und anzeigen
     while (true)
     {
       if (Serial.available())
@@ -83,13 +167,12 @@ void interaktiveBlinkTests()
         if (c == '\n' || c == '\r')
           break;
         eingabe += c;
-        Serial.print(c); // Zeichen anzeigen
+        Serial.print(c);
       }
     }
 
     Serial.println();
     eingabe.trim();
-
     if (eingabe == "")
     {
       Serial.println("Interaktiver Blink-Modus beendet.");
@@ -103,7 +186,6 @@ void interaktiveBlinkTests()
       continue;
     }
 
-    // Nur freigegebene GPIOs zulassen
     bool erlaubt = false;
     for (int i = 0; i < sizeof(gpioListe) / sizeof(GpioInfo); i++)
     {
@@ -125,15 +207,14 @@ void interaktiveBlinkTests()
     Serial.print("⚡ GPIO ");
     Serial.print(blinkPin);
     Serial.println(" blinkt jetzt. Leertaste = Stop.");
-
     pinMode(blinkPin, OUTPUT);
 
     while (true)
     {
       digitalWrite(blinkPin, LOW);
-      delay(100);
+      delay(BLINK_DELAY / 2);
       digitalWrite(blinkPin, HIGH);
-      delay(100);
+      delay(BLINK_DELAY / 2);
 
       if (Serial.available())
       {
@@ -143,7 +224,7 @@ void interaktiveBlinkTests()
           Serial.print("🛑 Blink-Modus für GPIO ");
           Serial.print(blinkPin);
           Serial.println(" beendet.");
-          digitalWrite(blinkPin, HIGH);
+          digitalWrite(blinkPin, LOW);
           break;
         }
       }
@@ -155,10 +236,14 @@ void setup()
 {
   Serial.begin(115200);
   delay(1000);
-  Serial.println("\n🚀 Starte erweiterten GPIO-Test mit Hinweisen...");
+  Serial.println("\n🚀 Starte erweiterten GPIO-Test mit I2C/SPI-Anzeige...");
 
-  // I2C einmalig anzeigen
-  // SPi einmalig anzeigen
+  Wire.begin(); // SDA = GPIO21, SCL = GPIO22 (ESP32 Standard)
+  SPI.begin();  // SPI starten
+
+  scanI2C();         // Alle I2C-Geräte anzeigen
+  testSPI(spiCSPin); // Einfachen SPI-Test
+  delay(3000); // Wartezeit für I2C/SPI-Scan
   interaktiveBlinkTests();
 }
 
@@ -166,15 +251,13 @@ void loop()
 {
   for (int i = 0; i < sizeof(gpioListe) / sizeof(GpioInfo); i++)
   {
-    // ⛔️ Check auf Tasteneingabe zum Abbrechen des GPIO-Tests
-    Serial.println("💡 Zum Abbrechen während des GPIO-Tests: 'x' senden");
     if (Serial.available())
     {
       char abbrechTaste = Serial.read();
       if (abbrechTaste == 'x' || abbrechTaste == 'X')
       {
         Serial.println("\n❌ GPIO-Durchlauf abgebrochen – zurück zum interaktiven Modus.");
-        break; // raus aus der Schleife → Springt zu interaktiveBlinkTests()
+        break;
       }
     }
 
@@ -189,20 +272,19 @@ void loop()
     {
       pinMode(pin, OUTPUT);
       digitalWrite(pin, LOW);
-      delay(500);
+      delay(BLINK_DELAY / 2);
       digitalWrite(pin, HIGH);
-      delay(500);
+      delay(BLINK_DELAY / 2);
       digitalWrite(pin, LOW);
     }
     else
     {
       Serial.println("⏭️ Kein Output-Test");
-      delay(500);
+      delay(BLINK_DELAY);
     }
   }
 
   Serial.println("\n📅 GPIO-Test abgeschlossen.");
-  
-  interaktiveBlinkTests(); // Zurück in den Blinkmodus
+  interaktiveBlinkTests();
   delay(100);
 }
