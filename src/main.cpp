@@ -154,11 +154,11 @@ void testSPI(int csPin)
   Serial.println(response, HEX);
   if (response != 0xFF)
   {
-    Serial.println("✅ Möglicherweise Gerät erkannt.");
+    Serial.println("✅ Möglicherweise Gerät erkannt. SPI genauer prüfen!");
   }
   else
   {
-    Serial.println("❌ Keine sinnvolle Antwort.");
+    Serial.println("❌ Keine sinnvolle Antwort von SPI-Geräten.");
   }
 } // Ende testSPI()
 
@@ -182,7 +182,8 @@ void interaktiveBlinkTests()
 
     if (Serial.available() == 0)
     {
-      Serial.println("Keine Eingabe erkannt. Zurück in den normalen Loop.");
+      Serial.println("Keine Eingabe erkannt. Zurück in den GPIO An/Aus Loop.");
+      Serial.println("Drücke 'x' um den GPIO-Durchlauf zu beenden.");
       break;
     }
 
