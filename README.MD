@@ -1,8 +1,10 @@
 # 🔌 GPIO_mit_LED_testen
 
-Dieses Projekt testet die Ansteuerung eines GPIO-Pins mit einer LED –  
-beispielhaft umgesetzt auf einem ESP32-Board.  
+Dieses Projekt testet die Ansteuerung eines GPIO-Pins mit einer LED –
+beispielhaft umgesetzt auf einem ESP32-Board. 
 Ziel ist es, zu erkennen, ob die Pin-Ausgabe funktioniert – z. B. durch einfaches Blinken einer LED.
+
+> ℹ️ Dieses Werkzeug eignet sich für alle, die GPIO-Funktionen testen, unbekannte Pins aufspüren oder neue Boards prüfen möchten – unabhängig vom Erfahrungsstand.
 
 ---
 
@@ -43,7 +45,7 @@ Auch in der **Arduino IDE** verwendbar:
 
 ---
 
-## 🧪 Funktion
+## 🧪 Funktionen
 
 - Es werden alle verfügbaren GPIOs nacheinander aktiviert und deaktiviert.
   - Im seriellen Monitor wird angezeigt, **welcher GPIO aktuell angesteuert** wird.
@@ -54,6 +56,21 @@ Auch in der **Arduino IDE** verwendbar:
     - Falsche Verdrahtung
     - Kalte Lötstellen
     - Unterbrochene Verbindungen
+
+---
+
+## 🧭 Zusatzfunktion: Pinsuche bei unbekannten Boards
+
+Gerade bei günstigen Boards ohne klare Beschriftung oder abweichender Pinbelegung hilft dieses Tool dabei, **herauszufinden, welcher physische Pin welcher GPIO-Nummer entspricht**.
+
+- Viele Boards (vor allem günstigere oder No-Name-Modelle, von Arduino bis ESP32) haben **abweichende oder fehlende Beschriftungen**.
+- Mit dieser Anwendung lässt sich durch einfaches Umstecken oder Abtasten mit einer LED (z. B. über eine Messspitze) leicht erkennen, **welcher GPIO tatsächlich aktiv ist**.
+- Besonders hilfreich, wenn Pinbezeichnungen im Datenblatt und auf der Platine nicht übereinstimmen.
+- Keine aufwendige Recherche nötig – einfach starten, LED anschließen, Pin suchen.
+
+> 💡 Wer die typische `for (x+1) GPIO[x]`-Schleife nicht selbst schreiben möchte, findet hier eine einfache und direkt nutzbare Lösung – mit Ausgabe im seriellen Monitor und sichtbarem LED-Signal.
+
+> Tipp: Das Tool ersetzt keine Pinout-Grafik, hilft aber beim Verifizieren von Beschriftung oder beim Aufspüren unbekannter Boards.
 
 ---
 
@@ -84,7 +101,7 @@ Alternativ kann auch ein neues Projekt angelegt und der Code in eine Datei `main
 
 ## 🛠️ Fehlersuche (Troubleshooting)
 
-Hier findest Du häufige Probleme und Lösungen – von Anfängerfehlern bis zu fortgeschrittenen Hinweisen:
+Hier findest Du häufige Probleme und Lösungen – von praktischen Stolperfallen bis zu technischen Eigenheiten:
 
 ### 🔋 Keine LED-Reaktion?
 
